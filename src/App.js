@@ -1,21 +1,50 @@
 import React, { Component } from 'react';
 import ValidationComponent from './ValidationComponent/ValidationComponent';
+import CharComponent from './CharComponent/CharComponent';
 import './App.css';
 
 class App extends Component {
 
   state = {
-    textLength: 0
+    textLength: 0,
+    text: ''
   }
 
+  /** Ao preencher o input salva o valor digitado e o tamanho da string. */
   textChangedHandler = (event) => {
-    let text = event.target.value;
+    const text = event.target.value;
     this.setState({
-      textLength: text.length
+      textLength: text.length,
+      text: text
     })
   }
 
+  /** Ao clicar no char da string renderizado, remove o elemento da string */
+  charClickHandler = (index) => {
+    let text = this.state.text.split('')
+    text.splice(index, 1);
+    text = text.join('');
+    this.setState({
+      text: text,
+      textLength: text.length
+    });
+
+  }
+
   render() {
+    let array_text = null;
+    if ( this.state.text !== '' )
+    {
+      array_text =
+      (
+        <div>
+          {this.state.text.split('').map((char, index) => {
+            return <CharComponent char={char} click={() => this.charClickHandler(index)}
+            key={index}/>
+          })}
+        </div>
+      )
+    }
     return (
       <div className="App">
       <ol>
@@ -27,11 +56,12 @@ class App extends Component {
       <li>When you click a CharComponent, it should be removed from the entered text.</li>
       </ol>
       <p>Hint: Keep in mind that JavaScript strings are basically arrays!</p>
-      <input type="text" onChange={(event) => this.textChangedHandler(event)}/>
+      <input type="text" value={this.state.text} onChange={(event) => this.textChangedHandler(event)}/>
       <p>
       {this.state.textLength}
       </p>
       <ValidationComponent textLength={this.state.textLength} />
+      {array_text}
       </div>
     );
   }
